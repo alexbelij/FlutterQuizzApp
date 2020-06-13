@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:quizapp/QuestionLogic.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 import 'Question.dart';
 
@@ -32,6 +33,7 @@ QuestionLogic questionLogic = QuestionLogic();
 
 class _QuizPageState extends State<QuizPage> {
   int index = 0;
+  int dogruSayisi = 0;
   String soru = questionLogic.soruDondur(0).soru;
   List<Icon> iconListesi = List();
 
@@ -41,7 +43,17 @@ class _QuizPageState extends State<QuizPage> {
         listeyeIconEkle(dogrulukMu);
         index++;
         soru = questionLogic.soruDondur(index).soru;
-      } else {}
+      } else {
+        alertGoster();
+      }
+    });
+  }
+
+  void oyunuSifirla() {
+    setState(() {
+      index = 0;
+      dogruSayisi = 0;
+      iconListesi.clear();
     });
   }
 
@@ -49,20 +61,43 @@ class _QuizPageState extends State<QuizPage> {
 
   void listeyeIconEkle(bool dogrulukMu) {
     Question question = questionLogic.soruDondur(index);
-    if (question.dogruMu == dogrulukMu)
+    if (question.dogruMu == dogrulukMu) {
       iconListesi.add(
         Icon(
           Icons.check,
           color: Colors.green,
         ),
       );
-    else
+      dogruSayisi++;
+    } else
       iconListesi.add(
         Icon(
           Icons.close,
           color: Colors.red,
         ),
       );
+  }
+
+  void alertGoster() {
+    Alert(
+      context: context,
+      type: AlertType.success,
+      title: "OYUN TAMAMLANDI",
+      desc: "$dogruSayisi adet soru bilindi.",
+      buttons: [
+        DialogButton(
+          child: Text(
+            "Tekrar Dene",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
+          onPressed: () {
+            oyunuSifirla();
+            Navigator.pop(context);
+          },
+          width: 140,
+        )
+      ],
+    ).show();
   }
 
   @override
