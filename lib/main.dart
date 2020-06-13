@@ -1,4 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:quizapp/QuestionLogic.dart';
+
+import 'Question.dart';
 
 void main() => runApp(Quizzler());
 
@@ -24,7 +28,43 @@ class QuizPage extends StatefulWidget {
   _QuizPageState createState() => _QuizPageState();
 }
 
+QuestionLogic questionLogic = QuestionLogic();
+
 class _QuizPageState extends State<QuizPage> {
+  int index = 0;
+  String soru = questionLogic.soruDondur(0).soru;
+  List<Icon> iconListesi = List();
+
+  void butonOnClick(bool dogrulukMu) {
+    setState(() {
+      if (listeKontrolu()) {
+        listeyeIconEkle(dogrulukMu);
+        index++;
+        soru = questionLogic.soruDondur(index).soru;
+      } else {}
+    });
+  }
+
+  bool listeKontrolu() => index < questionLogic.listeBoyutu();
+
+  void listeyeIconEkle(bool dogrulukMu) {
+    Question question = questionLogic.soruDondur(index);
+    if (question.dogruMu == dogrulukMu)
+      iconListesi.add(
+        Icon(
+          Icons.check,
+          color: Colors.green,
+        ),
+      );
+    else
+      iconListesi.add(
+        Icon(
+          Icons.close,
+          color: Colors.red,
+        ),
+      );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -37,7 +77,7 @@ class _QuizPageState extends State<QuizPage> {
             padding: EdgeInsets.all(10.0),
             child: Center(
               child: Text(
-                'This is where the question text will go.',
+                soru,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 25.0,
@@ -61,7 +101,7 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
-                //The user picked true.
+                butonOnClick(true);
               },
             ),
           ),
@@ -79,12 +119,15 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
-                //The user picked false.
+                butonOnClick(false);
               },
             ),
           ),
         ),
-        //TODO: Add a Row here as your score keeper
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: iconListesi,
+        )
       ],
     );
   }
